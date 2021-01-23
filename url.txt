@@ -1,0 +1,7 @@
+
+
+http://localhost/fullapi/api/oneUser.php/?id=12152
+http://localhost/fullapi/api/readUser.php
+http://localhost/fullapi/api/updateUser.php
+http://localhost/fullapi/api/createUser.php
+http://localhost/fullapi/api/deleteUser.php
