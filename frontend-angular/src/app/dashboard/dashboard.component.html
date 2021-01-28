@@ -1,0 +1,62 @@
+<section class="section">
+  <div class="container">
+    <h1 class="title">
+      LISTE DES MEMBRES DU SITE
+    </h1>
+    <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+      <thead>
+          <tr>
+            <th>Id</th>
+            <th>Email</th>
+            <th>Mot de passe</th>
+            <th>Détails</th>
+            <th>Effacer</th>
+          </tr>
+      </thead>
+      <tbody>
+          <tr *ngFor="let user of users">
+            <td>{{user.id}}</td>
+            <td>{{user.email}}</td>
+            <td>{{user.password}}</td>
+            <td><button class="button is-warning" (click)="getOneUser(user)">Mettre a jour</button> </td>
+            <td><button class="button is-danger" (click)="deleteUser(user.id)">Supprimer</button> </td>
+          </tr>
+      </tbody>
+    </table>
+
+    <h3 class="title has-text-danger">Pour mettre à jour un element :</h3>
+    <ul>
+      <li><em class="text-danger">1 - merci de cliquer sur le bouton mettre a jour de la ligne concernée</em></li>
+      <li><em class="text-danger">2 - modifier les valeurs des champs dans le formulaire</em></li>
+      <li><em class="text-danger">3 - Valider en cliquant sur le bouton : Ajouter un membres ou mettre a jour</em></li>
+    </ul>
+
+  <!-- alors #f capture ngSubmit donc pas action ni methode ?????-->
+    <form  #f = "ngForm">
+      <div class="field">
+        <label class="label">Email</label>
+        <div class="control">
+          <!-- selectedUser: UsersModel = {id: null, email: null, password: null} depuis me composant dashboard -->
+          <!-- puis on recup la valeur email-->
+          <input class="input" [(ngModel)]="selectedUser.email" name="email" type="email" placeholder="email@email.com">
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label">Mot de passe</label>
+        <div class="control">
+          <input class="input" [(ngModel)]="selectedUser.password" name="password" type="password" placeholder="motdepassesecret">
+        </div>
+      </div>
+    </form>
+
+    <div class="field mt-5">
+      <div class="control">
+        <input type="button" (click)="createOrUpdateUser(f)" class="button is-dark" value="Ajouter un membres ou mettre a jour" />
+      </div>
+    </div>
+
+  </div>
+</section>
+
+

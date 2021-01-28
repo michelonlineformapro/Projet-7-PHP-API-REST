@@ -1,9 +1,10 @@
 <?php
 header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: PUT, PATCH");
+//Le type de fichier encoder est json + utf8
 header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Max-Age: 3600");
-header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Headers, Authorization");
 
 //Appel des classes
 require "../config/Database.php";
@@ -13,20 +14,36 @@ require "../class/Users.php";
 $database = new Database();
 //Recup methode PDO
 $db = $database->getPDO();
+//Recup flux php recup des valeurs du json et decode
+$postData = json_decode(file_get_contents("php://input"));
 
-//Instance users class et ses methodes crud
-//Necessite une connexion imposée par le constructeur
-$users = new Users($db);
+if(isset($postData) && !empty($postData)) {
+    //Association des valeur au input angular
+    $id = $postData->id;
+    $email = $postData->email;
+    $password = $postData->password;
 
-$data = json_decode($users->id, $users->email, $users->password);
-//recup id
-$users->id = $data['id'];
+    $sql = "UPDATE users SET `email` = '{$email}', `password` = '{$password}' WHERE `id` = '{$id}'";
+    $update = $db->prepare($sql);
 
-$users->email = $data['email'];
-$users->password = $data['password'];
+    if($update){
+        $users = [
+            "email" => $email,
+            "password" => $password,
+            "id" => $db->lastInsertId()
+        ];
+        //Bind des params
+        $update->bindParam(1, $id);
+        $update->bindParam(2, $email);
+        $update->bindParam(3, $password);
 
-if($users->updateUser()){
-    echo json_encode("Mise a jour effectuée");
-}else{
-    echo json_encode("Erreur de mise a jour");
+        $update->execute(array($id, $email, $password));
+        //Reponse serveur
+        http_response_code(200);
+        //encodage du tableau
+        echo json_encode($users);
+    }else{
+        http_response_code(404);
+    }
+
 }

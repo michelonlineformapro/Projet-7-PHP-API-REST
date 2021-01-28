@@ -1,9 +1,10 @@
 <?php
 header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: PUT, GET, POST, DELETE");
+//Le type de fichier encoder est json + utf8
 header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Max-Age: 3600");
-header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Headers, Authorization");
 
 //Appel des classes
 require "../config/Database.php";
@@ -14,16 +15,21 @@ $database = new Database();
 //Recup methode PDO
 $db = $database->getPDO();
 
-//Instance users class et ses methodes crud
-//Necessite une connexion imposée par le constructeur
-$users = new Users($db);
+$id = $_GET['id'];
+if(!$id){
+    return http_response_code(400);
+}
 
-$data = json_decode($users->id);
-//Si id existe ok sinon die
-$users->id = $data['id'];
+//SUPPRIMER
 
-if($users->deleteUser()){
-    echo json_encode("Utilisateur supprimer");
+$sql = "DELETE FROM `users`  WHERE `id` = '{$id}' LIMIT 1";
+$delete = $db->prepare($sql);
+
+$delete->bindParam(1, $id);
+$ok = $delete->execute();
+
+if($ok){
+    http_response_code(204);
 }else{
-    echo json_encode("Erreur lors de la suppression de l'utilisateur");
+    http_response_code(422);
 }
